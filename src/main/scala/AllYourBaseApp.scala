@@ -2,6 +2,8 @@ package main.scala
 
 import swing._
 import event._
+import java.awt.{Toolkit, AWTEvent, EventQueue, Adjustable}
+import javax.swing._
 
 /**
  * @author Fairfax
@@ -19,12 +21,27 @@ object AllYourBaseApp extends App {
     object outputTextArea extends TextArea
     object statusTextField extends TextField
 
-    listenTo(inputTextArea)
+    listenTo(processButton)
 
     reactions += {
       case ButtonClicked(`processButton`) =>
+        statusTextField.text = "Processing..."
         processInput()
+        statusTextField.text = "Done."
     }
+
+    class ErrorHandlingEventQueue extends EventQueue {
+      override def dispatchEvent(newEvent: AWTEvent) {
+        try {
+          super.dispatchEvent(newEvent)
+        } catch {
+          case e: Exception => statusTextField.text =
+            "Error: %s".format(e.getLocalizedMessage)
+        }
+      }
+    }
+    Toolkit.getDefaultToolkit.getSystemEventQueue
+      .push(new ErrorHandlingEventQueue())
 
     def processInput () {
       val inputs = inputTextArea.text.lines
@@ -37,24 +54,60 @@ object AllYourBaseApp extends App {
       }
     }
 
-    def top = new MainFrame {
+    val top = new MainFrame {
       title = "All Your Base - Google Code Jam"
       preferredSize = new Dimension(500, 600)
-      contents = new BoxPanel(Orientation.Vertical) {
-        contents += new SplitPane(Orientation.Vertical,
+      contents = new GroupPanel {
+        val inLabel = new Label("In")
+        val inScroll = new ScrollPane(inputTextArea)
+        val outLabel = new Label("Out")
+        val outScroll = new ScrollPane(outputTextArea)
+        val splitPane = new SplitPane(Orientation.Vertical,
           new BoxPanel(Orientation.Vertical) {
-            contents += new Label("In")
-            contents += new ScrollPane(inputTextArea)
+            contents += inLabel
+            contents += inScroll
           },
           new BoxPanel(Orientation.Vertical) {
-            contents += new Label("Out")
-            contents += new ScrollPane(outputTextArea)
+            contents += outLabel
+            contents += outScroll
           }) {
           resizeWeight = 0.5
         }
-        contents += processButton
+        verticalGroup {
+          sequential(
+            splitPane,
+            parallel(Alignment.Center)(processButton, statusTextField)
+          )
+        }
+        horizontalGroup {
+          parallel()(
+            splitPane,
+            sequential(processButton, statusTextField)
+          )
+        }
       }
       centerOnScreen()
     }
+//    val top = new Frame {
+//      contents = new GroupPanel {
+//        val label1 = new Label("Label 1")
+//        val label2 = new Label("Label 2")
+//        val text1 = new TextField
+//        val text2 = new TextField
+//        autoCreateGaps = true
+//        autoCreateContainerGaps = true
+//        horizontalGroup {
+//          sequential(
+//            parallel()(label1, label2),
+//            parallel()(text1, text2)
+//          )
+//        }
+//        verticalGroup {
+//          sequential(
+//            parallel(Alignment.Baseline)(label1, text1),
+//            parallel(Alignment.Baseline)(label2, text2)
+//          )
+//        }
+//      }
   }
 }

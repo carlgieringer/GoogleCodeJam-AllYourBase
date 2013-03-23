@@ -18,7 +18,10 @@ object AllYourBaseApp extends App {
     object processButton extends Button("Process")
     object inputTextArea extends TextArea
     object outputTextArea extends TextArea
-    object statusTextField extends TextField
+    object statusTextField extends TextField {
+      maximumSize = new Dimension(Short.MaxValue, preferredSize.height)
+      editable = false
+    }
 
     listenTo(processButton)
 
@@ -71,7 +74,10 @@ object AllYourBaseApp extends App {
         verticalGroup {
           sequential(
             splitPane,
-            parallel(Alignment.Center)(processButton, statusTextField)
+            parallel(Alignment.Center)(
+              processButton,
+              // I think supposed to keep text box at vertical defaults at all times, but doesn't work
+              ComponentItem(statusTextField, DefaultSizes))
           )
         }
         horizontalGroup {

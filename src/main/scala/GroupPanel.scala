@@ -23,7 +23,21 @@ trait GroupPanel extends Panel {
     layout.setAutoCreateContainerGaps(b)
   }
 
-  sealed case class Size(value: Int)
+  class Size(val value: Int) {
+    override def equals(other: Any) = other match {
+      case that: Size => that.canEqual(this) && this.value == that.value
+      case _ => false
+    }
+    override def hashCode = 41 * value.hashCode + 41
+    override def toString = "Size(%s)".format(value)
+    def canEqual(that: Size) = true
+    def copy(value: Int = value) = new Size(value)
+  }
+
+  object Size {
+    def apply(value: Int) : Size = Size(value)
+    def unapply(size: Size) = Some(size.value)
+  }
 
   case object SizePreferred extends Size(GroupLayout.PREFERRED_SIZE)
 

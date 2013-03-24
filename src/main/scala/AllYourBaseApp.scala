@@ -3,7 +3,6 @@ package main.scala
 import swing._
 import event._
 import java.awt.{Toolkit, AWTEvent, EventQueue}
-import java.security.PrivilegedActionException
 
 /**
  * @author Carl Gieringer

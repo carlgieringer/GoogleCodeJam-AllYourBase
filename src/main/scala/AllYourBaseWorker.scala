@@ -7,9 +7,9 @@ import collection.mutable
  * @version 3/23/13 7:05 PM
  */
 object AllYourBaseWorker {
-  def process (data : Array[String]) : Seq[Int] = {
+  def process (data : Array[String]) : Seq[Long] = {
 
-    val results = new mutable.Queue[Int]
+    val results = new mutable.Queue[Long]
     val map = mutable.HashMap[Char, Int]()
     for (symbols <- data) {
       if (symbols.isEmpty) {
@@ -34,8 +34,8 @@ object AllYourBaseWorker {
 
       // The smallest base is 2
       val base = math.max(map.size, 2)
-      var place = 1
-      var minSeconds = 0
+      var place = 1l
+      var minSeconds = 0l
       for (symbol <- symbols.reverse) {
         if (!map.contains(symbol)) {
           sys.error("All symbols should be in the map; '%s' is not in the map for %s".format(symbol, symbols))

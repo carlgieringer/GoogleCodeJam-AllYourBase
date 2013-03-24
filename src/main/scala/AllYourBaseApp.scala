@@ -18,7 +18,9 @@ object AllYourBaseApp extends App {
   object Gui extends SimpleSwingApplication {
     object processButton extends Button("Process")
     object inputTextArea extends TextArea
-    object outputTextArea extends TextArea
+    object outputTextArea extends TextArea {
+      editable = false
+    }
     object statusTextField extends TextField {
       maximumSize = new Dimension(Short.MaxValue, preferredSize.height)
       editable = false
@@ -67,8 +69,12 @@ object AllYourBaseApp extends App {
       }
 
       val data = lines.take(count).toArray
-      val output = AllYourBaseWorker.process(count, data)
-      statusTextField.text = output
+      if (count != data.length) {
+        sys.error("length of data and count must be equal")
+      }
+      val results = AllYourBaseWorker.process(data)
+      val outputs = results.zipWithIndex.map{ case (result, i) => "Case #%d: %d".format(i+1, result)}
+      outputTextArea.text = outputs.mkString("\n")
     }
 
     val top = new MainFrame {

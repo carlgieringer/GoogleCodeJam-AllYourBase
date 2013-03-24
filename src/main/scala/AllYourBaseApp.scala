@@ -3,6 +3,7 @@ package main.scala
 import swing._
 import event._
 import java.awt.{Toolkit, AWTEvent, EventQueue}
+import java.security.PrivilegedActionException
 
 /**
  * @author Carl Gieringer
@@ -37,23 +38,37 @@ object AllYourBaseApp extends App {
         try {
           super.dispatchEvent(newEvent)
         } catch {
-          case e: Exception => statusTextField.text =
-            "Error: %s".format(e.getLocalizedMessage)
+          // For reasons I do not understand, if we throw an Exception of a custom subclass of Exception,
+          // the exception here will be a PrivilegedActionException wrapping our exception, and you can
+          // retrieve the exception we actually want using getCause
+          case e: Throwable => setStatusText(e.getMessage)
         }
       }
     }
-    Toolkit.getDefaultToolkit.getSystemEventQueue
-      .push(new ErrorHandlingEventQueue())
+    Toolkit.getDefaultToolkit.getSystemEventQueue.push(new ErrorHandlingEventQueue())
+
+    def setStatusText(status : String) {
+      statusTextField.text = "Error: %s".format(status)
+    }
 
     def processInput () {
-      val inputs = inputTextArea.text.lines
-      val count = inputs.next().toInt
-      for (input <- 0 until count) {
-        if (inputs.hasNext) {
-          val input = inputs.next()
-          outputTextArea.text = input
-        }
+      val lines = inputTextArea.text.lines
+
+      if (!lines.hasNext) {
+        sys.error("Input cannot be empty")
       }
+
+      var count = 0
+      try {
+        count = lines.next().toInt
+      } catch {
+        case _ : NumberFormatException =>
+          sys.error("First line of input must be a number equal to remaining input lines")
+      }
+
+      val data = lines.take(count).toArray
+      val output = AllYourBaseWorker.process(count, data)
+      statusTextField.text = output
     }
 
     val top = new MainFrame {

@@ -10,7 +10,7 @@ import java.awt.{Toolkit, AWTEvent, EventQueue}
  */
 object AllYourBaseApp extends App {
 
-  override def main (args:Array[String]) {
+  override def main (args: Array[String]) {
     Gui.main(args)
   }
 
@@ -48,7 +48,7 @@ object AllYourBaseApp extends App {
     }
     Toolkit.getDefaultToolkit.getSystemEventQueue.push(new ErrorHandlingEventQueue())
 
-    def setStatusText(status : String) {
+    def setStatusText(status: String) {
       statusTextField.text = "Error: %s".format(status)
     }
 

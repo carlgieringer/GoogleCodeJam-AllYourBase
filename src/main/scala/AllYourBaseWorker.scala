@@ -7,7 +7,7 @@ import collection.mutable
  * @version 3/23/13 7:05 PM
  */
 object AllYourBaseWorker {
-  def process (data : Array[String]) : Seq[Long] = {
+  def process (data: Array[String]): Seq[Long] = {
 
     val results = new mutable.Queue[Long]
     val map = mutable.HashMap[Char, Int]()

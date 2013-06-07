@@ -1,6 +1,6 @@
 package main.scala
 
-import javax.swing.{JPanel, GroupLayout}
+import javax.swing.GroupLayout
 import scala.swing._
 
 trait GroupPanel extends Panel {

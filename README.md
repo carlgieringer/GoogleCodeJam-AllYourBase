@@ -1,4 +1,4 @@
-GoogleCodeJame-AllYourBase
+GoogleCodeJam-AllYourBase
 ==========================
 
 An IntelliJ IDEA project implementing a solution to
